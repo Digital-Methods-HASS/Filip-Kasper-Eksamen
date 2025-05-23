@@ -1,0 +1,480 @@
+---
+title: "Final Project"
+author: "Kasper Noe Rasmussen and Filip B. Rasmussen"
+date: "2025-05-07"
+output: html_document
+---
+
+We begin with loading the R-packages 
+
+Here we load our libraries 
+
+```{r pressure, echo=TRUE}
+library(tidyverse)
+```
+
+We then load in the csv file with our data that we created in excel and give it the name Unemployment
+
+```{r}
+Unemployment <- read_csv("~/Skole/Digitale arkiver og Medier/Dokumenter/RStudio/Final Projekt/Data/Arbejdsløshed 1900-1950 - Ark1 (3).csv")
+
+```
+We want to create a graph that shows us the average unemployed people from 1902 to 1950 because 1900 to 1901 has no data
+
+We do this by creating a new value that we call selected_datall 
+
+```{r}
+#We want our data from the 14 row and then columns from 4:52
+selected_dataall <- Unemployment[14, 4:52]
+
+# We here ensure that it is numeric
+selected_dataall <- as.numeric(selected_dataall)
+
+# We want to make sure we have 49 values 
+print(length(selected_dataall)) 
+
+# We then make a corresponding year range to match the 49 years
+year_range <- 1902:1950  
+print(length(year_range))  
+
+# We now create a data frame with the year range and the selecteddata 
+dfall <- data.frame(
+  Aarall = as.character(year_range),  
+  Værdiall = selected_dataall)
+
+# Plotting the graph
+ggplot(dfall, aes(x = Aarall, y = Værdiall)) +
+  geom_line(linewidth = 1, color = "blue", aes(group = 1)) + 
+  geom_point(color = "red") +  
+  scale_y_log10(labels = scales::comma) +
+  labs(title = "Average number of unemployed people from 1902 to 1950", x = "Year", y = "Number of unemployed") +
+  theme(
+    axis.text.x = element_text(angle = 70, hjust = 1.1)  
+  )
+```
+
+We want to create some graph that only show us some specific years the first we will do is from 1914 to 1918
+
+```{r}
+# The data we need is from column 16:20 and from row 14
+selected_data <- Unemployment[14, 16:20]  
+
+# Check selected data
+selected_data
+
+# We make sure our data is numeric 
+selected_data <- as.numeric(selected_data)
+
+
+```
+
+The next step is to create the graph 
+
+```{r}
+# Here we will create a data frame with the selected_data as the y-axis and the years we want as the x-axis
+df <- data.frame(
+  Aar = c("1914", "1915", "1916", "1917", "1918"),
+  Værdi = as.vector(selected_data))
+
+
+# Plotting the graph
+ggplot(df, aes(x = Aar, y = Værdi)) +
+  geom_line(linewidth = 1, color = "blue", aes(group = 1,)) + 
+  geom_point(color = "red") +  
+  scale_y_log10(labels = scales::comma)+
+  labs(title = "Average number of unemployed people between 1914 to 1918", x = "Year", y = "Number of unemployed") +
+  theme_minimal()
+
+```
+
+We will do the same for the years of 1939 to 1945 or ww2 
+
+```{r}
+# We want the data from row 14 and column 41 to 47
+selected_data2 <- Unemployment[14, 41:47] 
+
+# Check the selected data
+selected_data2
+
+# We make sure it is numeric
+selected_data2 <- as.numeric(selected_data2)
+
+```
+
+We then again have our selected data the on to create the graph
+
+```{r}
+# We first create our data frame for this graph 
+df2 <- data.frame(
+  Aar2 = c("1939", "1940", "1941", "1942", "1943", "1944", "1945"),
+  Værdi2 = as.vector(selected_data2) 
+)
+
+# Plotting the graph
+ggplot(df2, aes(x = Aar2, y = Værdi2)) +
+  geom_line(linewidth = 1, color = "blue", aes(group = 1,)) + 
+  geom_point(color = "red") +  
+  scale_y_log10(labels = scales::comma)+
+  labs(title = "Average number of unemployed people between 1939 to 1945", x = "Year", y = "Number of unemployed") +
+  theme_minimal()
+```
+
+The last of this type of graph will be the years from 1928 to 1934 
+
+```{r}
+# The data we want is again from row 14 and column 30 to 36
+selected_data3 <- Unemployment[14, 30:36] 
+
+# We check the selected data 
+selected_data3
+
+# We then again make sure it is numeric 
+selected_data3 <- as.numeric(selected_data3)
+```
+
+
+We can now make our 3rd graph 
+
+```{r}
+# We create the data frame
+df3 <- data.frame(
+  Aar3 = c("1928", "1929", "1930", "1931", "1932", "1933", "1934"),
+  Værdi3 = as.vector(selected_data3)
+)
+
+# Plot the graph
+ggplot(df3, aes(x = Aar3, y = Værdi3)) +
+  geom_line(linewidth = 1, color = "blue", aes(group = 1,)) + 
+  geom_point(color = "red") +  
+  scale_y_log10(labels = scales::comma)+
+  labs(title = "Average number unemployed people between 1928 to 1934", x = "Year", y = "Number of unemployed") +
+  theme_minimal()
+```
+
+
+We then want to create graph that show us the number of unemployed people over the course of a single year
+
+```{r}
+
+# We start with creating a data frame with month of the year we want in this case 1902 (our first year)
+# We also manually take the values from the datasheet and put it in
+data02 <- data.frame(
+  date1 = as.Date(c(
+    "1902-01-01", "1902-02-01", "1902-03-01", "1902-04-01", "1902-05-01", 
+    "1902-06-01", "1902-07-01", "1902-08-01", "1902-09-01", "1902-10-01", 
+    "1902-11-01", "1902-12-01"
+  )),
+  values1 = c(21857, 21943, 18720, 13515, 15347, 15650, 14095, 12990, 
+             11580, 12438, 14180, 20155))
+
+
+
+# We then check the structure of the data 
+str(data02)
+```
+
+We can now plot the graph 
+```{r}
+# Plotting the graph
+ggplot(data02, aes(x = date1, y = values1)) +
+  geom_line(color = "blue") +     
+  geom_point(color = "red") +      
+  scale_x_date(date_labels = "%b %Y", date_breaks = "1 month") +  
+  labs(x = "Month", y = "Number of unemployed", title = "Number of unemployed per month in 1902") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+ 
+  theme_minimal()
+```
+
+We continue on to the year 1916 during ww1 
+
+```{r}
+# We again start by creating a data frame with the months and manually putting in the data
+data16 <- data.frame(
+  date2 = as.Date(c(
+    "1916-01-01", "1916-02-01", "1916-03-01", "1916-04-01", "1916-05-01", 
+    "1916-06-01", "1916-07-01", "1916-08-01", "1916-09-01", "1916-10-01", 
+    "1916-11-01", "1916-12-01"
+  )),
+  values2 = c(15492, 17314, 12654, 6627, 3896, 2880, 2950, 3279, 
+             2879, 3034, 4858, 9049))
+
+
+# We check the data
+str(data16)
+```
+
+We then create the graph
+
+```{r}
+ggplot(data16, aes(x = date2, y = values2)) +
+  geom_line(color = "blue") +      
+  geom_point(color = "red") +      
+  scale_x_date(date_labels = "%b %Y", date_breaks = "1 month") +  
+  labs(x = "Month", y = "Number of unemployed", title = "Number of unemployed per month in 1916") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme_minimal()
+
+```
+
+We then move on to year 1925 
+
+```{r}
+# We create the data frame
+data25 <- data.frame(
+  date3 = as.Date(c(
+    "1925-01-01", "1925-02-01", "1925-03-01", "1925-04-01", "1925-05-01", 
+    "1925-06-01", "1925-07-01", "1925-08-01", "1925-09-01", "1925-10-01", 
+    "1925-11-01", "1925-12-01"
+  )),
+  values3 = c(44643, 44468, 40055, 35646, 31807, 24135, 22393, 26348, 
+              28509, 36526, 55797, 85944)
+)
+
+# Check the data
+str(data25)
+```
+
+We create our graph with our new data frame
+
+```{r}
+ggplot(data25, aes(x = date3, y = values3)) +
+  geom_line(color = "blue") +      
+  geom_point(color = "red") +     
+  scale_x_date(date_labels = "%b %Y", date_breaks = "1 month") +  
+  labs(x = "Month", y = "Number of unemployed", title = "Number of unemployed per month in 1925") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+  
+  theme_minimal()
+```
+
+Now we are on to year 1933
+
+```{r}
+# We create the data frame
+data33 <- data.frame(
+  date4 = as.Date(c(
+    "1933-01-01", "1933-02-01", "1933-03-01", "1933-04-01", "1933-05-01", 
+    "1933-06-01", "1933-07-01", "1933-08-01", "1933-09-01", "1933-10-01", 
+    "1933-11-01", "1933-12-01"
+  )),
+  values4 = c(141354, 140134, 116762, 95692, 81535, 73542, 73338, 72559, 
+             72017, 80565, 89948, 131930))
+
+
+# Check the data
+str(data33)
+```
+
+Time to create the graph
+
+```{r}
+ggplot(data33, aes(x = date4, y = values4)) +
+  geom_line(color = "blue") +      
+  geom_point(color = "red") +      
+  scale_x_date(date_labels = "%b %Y", date_breaks = "1 month") +  
+  labs(x = "Month", y = "Number of unemployed", title = "Number of unemployed per month  in 1933") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+  
+  theme_minimal()
+
+```
+
+We have the graph that show us the year 1940 
+
+```{r}
+data40 <- data.frame(
+  date5 = as.Date(c(
+    "1940-01-01", "1940-02-01", "1940-03-01", "1940-04-01", "1940-05-01", 
+    "1940-06-01", "1940-07-01", "1940-08-01", "1940-09-01", "1940-10-01", 
+    "1940-11-01", "1940-12-01"
+  )),
+  values5 = c(149179, 163871, 152495, 129972, 101422, 84636, 80928, 89673, 
+             89936, 96332, 117262, 179410)
+)
+
+str(data40)
+```
+
+We create the graph
+```{r}
+ggplot(data40, aes(x = date5, y = values5)) +
+  geom_line(color = "blue") +     
+  geom_point(color = "red") +      
+  scale_x_date(date_labels = "%b %Y", date_breaks = "1 month") +  
+  labs(x = "Month", y = "Number of unemployed", title = "Number of unemployed per month in 1940") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+ 
+  theme_minimal()
+
+```
+
+At last we create for the year 1947 
+
+```{r}
+# We create our last data frame
+data47 <- data.frame(
+  date6 = as.Date(c(
+    "1947-01-01", "1947-02-01", "1947-03-01", "1947-04-01", "1947-05-01", 
+    "1947-06-01", "1947-07-01", "1947-08-01", "1947-09-01", "1947-10-01", 
+    "1947-11-01", "1947-12-01"
+  )),
+  values6 = c(71966, 89910, 70352, 17913, 6391, 3309, 3275, 4076, 
+             7714, 12282, 20794, 37569))
+
+
+# Check the data for the last time
+str(data47)
+```
+
+We then create the last graph
+
+```{r}
+ggplot(data47, aes(x = date6, y = values6)) +
+  geom_line(color = "blue") +      
+  geom_point(color = "red") +      
+  scale_x_date(date_labels = "%b %Y", date_breaks = "1 month") + 
+  labs(x = "Month", y = "Number of unemployed", title = "Number of unemployed per month in 1947") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+  
+  theme_minimal()
+
+```
+
+We will now create a graph showing percent over the period 1910 to 1950
+
+```{r}
+#We want our data from the 16 row and then columns from 12:52
+selected_dataallp <- Unemployment[16, 12:52]
+
+# We here ensure that it is numeric
+selected_dataallp <- as.numeric(selected_dataallp)
+
+# We want to make sure we have 41 values 
+print(length(selected_dataallp)) 
+
+# We then make a corresponding year range to match the 41 years
+year_rangep <- 1910:1950  
+print(length(year_rangep))  
+
+# We now create a data frame with the year range and the selecteddata 
+dfallp <- data.frame(
+  Aarallp = as.character(year_rangep),  
+  Værdiallp = selected_dataallp)
+
+# Plotting the graph
+ggplot(dfallp, aes(x = Aarallp, y = Værdiallp)) +
+  geom_line(linewidth = 1, color = "blue", aes(group = 1)) + 
+  geom_point(color = "red") +  
+  scale_y_log10(labels = scales::comma) +
+  labs(title = "Percent of unemployed people from 1910 to 1950", x = "Year", y = "Percent of unemployed") +
+  theme(
+    axis.text.x = element_text(angle = 70, hjust = 1.1)  
+  )
+```
+
+We then want to create graph with percent over the years 1914 to 1918, 1928 to 1934 and 1939 to 1945 
+
+We will start with 1914 to 1918
+
+```{r}
+# The data we need is from column 16:20 and from row 16
+selected_dataww1 <- Unemployment[16, 16:20]  
+
+# Check selected data
+selected_dataww1
+
+# We make sure our data is numeric 
+selected_dataww1 <- as.numeric(selected_dataww1)
+
+
+```
+
+The next step is to create the graph 
+
+```{r}
+# Here we will create a data frame with the selected_data as the y-axis and the years we want as the x-axis
+dfww1 <- data.frame(
+  Aarww1 = c("1914", "1915", "1916", "1917", "1918"),
+  Værdiww1 = as.vector(selected_dataww1))
+
+
+# Plotting the graph
+ggplot(dfww1, aes(x = Aarww1, y = Værdiww1)) +
+  geom_line(linewidth = 1, color = "blue", aes(group = 1,)) + 
+  geom_point(color = "red") +  
+  scale_y_log10(labels = scales::comma)+
+  labs(title = "Percent of unemployed people from 1914 to 1918", x = "Year", y = "Percent of unemployed") +
+  theme_minimal()
+
+```
+
+We then move on to 1928 to 1934
+
+```{r}
+# The data we want is again from row 16 and column 30 to 36
+selected_datad <- Unemployment[16, 30:36] 
+
+# We check the selected data 
+selected_datad
+
+# We then again make sure it is numeric 
+selected_datad <- as.numeric(selected_datad)
+```
+
+
+We can now make the graph 
+
+```{r}
+# We create the data frame
+dfd <- data.frame(
+  Aard = c("1928", "1929", "1930", "1931", "1932", "1933", "1934"),
+  Værdid = as.vector(selected_datad)
+)
+
+# Plot the graph
+ggplot(dfd, aes(x = Aard, y = Værdid)) +
+  geom_line(linewidth = 1, color = "blue", aes(group = 1,)) + 
+  geom_point(color = "red") +  
+  scale_y_log10(labels = scales::comma)+
+  labs(title = "Percent of unemployed people from 1928 to 1934", x = "Year", y = "Percent of unemployed") +
+  theme_minimal()
+```
+
+We then move on to the last percent graph 1939 to 1945 
+
+```{r}
+# We want the data from row 16 and column 41 to 47
+selected_dataww2 <- Unemployment[16, 41:47] 
+
+# Check the selected data
+selected_dataww2
+
+# We make sure it is numeric
+selected_dataww2 <- as.numeric(selected_dataww2)
+
+```
+
+We can now make the last percent graph
+
+```{r}
+# We first create our data frame for this graph 
+dfww2 <- data.frame(
+  Aarww2 = c("1939", "1940", "1941", "1942", "1943", "1944", "1945"),
+  Værdiww2 = as.vector(selected_dataww2) 
+)
+
+# Plotting the graph
+ggplot(dfww2, aes(x = Aarww2, y = Værdiww2)) +
+  geom_line(linewidth = 1, color = "blue", aes(group = 1,)) + 
+  geom_point(color = "red") +  
+  scale_y_log10(labels = scales::comma)+
+  labs(title = "Percent unemployed people between 1939 to 1945", x = "Year", y = "Percent of unemployed") +
+  theme_minimal()
+```
+
+
+We have now created 14 graph 
+
+The first graph show us the Average number of unemployed people from 1902 to 1950 
+
+The following 3 show us the average number of unemployed over the span of 4 to 6 years
+
+The following 6 graph show us the number of unemployed people during each month of a specific year
+
+The last 4 are graph like the first and second row above but with percent instead of the average number
